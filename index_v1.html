@@ -7,68 +7,41 @@
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="libs/howler.min.js"></script>
   <script>
     var songs;
-    var song = [];
     var current = 0;
     $(document).ready(function(){
       $.get('/cgi-bin/getsongs.cgi',function(data){
         songs = data.split("\n");
         songs = cleanArray(songs);
         shuffle(songs);
-      }).done(function(){
-        song.push(loadSound(songs[current]));  //  preload
-        $("#SongTitle").html(basename(songs[current]));
-        song[current].play();        
-        song.push(loadSound(songs[current+1]));
-      });
+      }).done(loadFirst);
 
       $("#NEXT").click(next);
-      $("#PAUSE").click(pause);
     });
 
-    function loadSound (src) {
-        var sound = document.createElement("audio");
-        if ("src" in sound) {
-            sound.autoPlay = false;
-        }
-        else {
-            sound = document.createElement("bgsound");
-            sound.volume = -10000;
-            sound.play = function () {
-                this.src = src;
-                this.volume = 0;
-            }
-        }
-        sound.src = src;
-        document.body.appendChild(sound);
-        return sound;
-     }
+    function loadFirst(){
 
-
+    }
     function next(){
-      song[current].pause();
-      song[current].currentTime = 0;
+      Howler._howls.forEach(function(song){song.stop()})
+      console.log(current);
+      console.log("Loading Song " + songs[current]);
+      var song = new Howl({
+        urls: [songs[current]],
+        onend: function() {
+          next();
+          console.log('Finished!');
+        }
+      });
 
+      $("#SongTitle").html(basename(songs[current]));
       //move to new song number and loop to begining of list if end of list is reached
       current += 1;
       if(current == songs.length){
         console.log("Back to the first song");
         current = 0;
-      }
-      song[current].play(); 
-      $("#SongTitle").html(basename(songs[current]));
-      console.log(current);
-      console.log("Loading Song " + songs[current]);
-
-      song.push(loadSound(songs[current+1]));
-    }
-
-    function pause(){
-      if(song[current].paused){
-        song[current].play();
-      }else{
-        song[current].pause();
       }
     }
 
@@ -110,10 +83,19 @@
   <div class="row">
     <div class="col-sm-4">
       <h3 id="SongTitle"></h3>
+      <p id="POS">Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
     </div>
-  </div>
-  <div class="jumbotron" id="PAUSE">
-    <h1>Pause</h1>
+    <div class="col-sm-4">
+      <h3>Column 2</h3>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+    </div>
+    <div class="col-sm-4">
+      <h3>Column 3</h3>        
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+    </div>
   </div>
 </div>
 
