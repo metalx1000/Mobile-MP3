@@ -10,12 +10,38 @@
   <script src="libs/howler.min.js"></script>
   <script>
     var songs;
+    var current = 0;
     $(document).ready(function(){
       $.get('/cgi-bin/getsongs.cgi',function(data){
         songs = data.split("\n");
+        songs = cleanArray(songs);
         shuffle(songs);
-      });
+      }).done(next);
+
+      $("#NEXT").click(next);
     });
+
+    function next(){
+      Howler._howls.forEach(function(song){song.stop()})
+      console.log(current);
+      console.log("Loading Song " + songs[current]);
+      var song = new Howl({
+        urls: [songs[current]],
+        autoplay: true,
+        onend: function() {
+          next();
+          console.log('Finished!');
+        }
+      });
+
+      $("#SongTitle").html(basename(songs[current]));
+      //move to new song number and loop to begining of list if end of list is reached
+      current += 1;
+      if(current == songs.length){
+        console.log("Back to the first song");
+        current = 0;
+      }
+    }
 
     function shuffle(a) {
         var j, x, i;
@@ -27,6 +53,21 @@
         }
         return a;
     }
+
+    // Will remove all falsy values: undefined, null, 0, false, NaN and "" (empty string)
+    function cleanArray(actual) {
+      var newArray = new Array();
+      for (var i = 0; i < actual.length; i++) {
+        if (actual[i]) {
+          newArray.push(actual[i]);
+        }
+      }
+      return newArray;
+    }
+
+    function basename(path) {
+      return path.split('/').reverse()[0];
+    }
   </script>
 </head>
 <body>
@@ -37,7 +78,7 @@
   </div>
   <div class="row">
     <div class="col-sm-4">
-      <h3>Column 1</h3>
+      <h3 id="SongTitle"></h3>
       <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
       <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
     </div>
