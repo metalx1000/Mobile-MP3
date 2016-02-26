@@ -2,4 +2,5 @@
 
 echo "Content-type: text/html"
 echo ""
-find ../Music/ -iname "*.mp3"|sed 's/^..//g'
+
+svc power stayon false && echo "Success"||echo "Fail"

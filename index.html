@@ -25,6 +25,24 @@
 
       $("#NEXT").click(next);
       $("#PAUSE").click(pause);
+
+      $("#screenon").click(function(){
+        $.get("cgi-bin/powerstayon.cgi",function(data){
+          console.log(data);
+        });
+      });
+
+      $("#allowoff").click(function(){
+        $.get("cgi-bin/powerturnoff.cgi",function(data){
+          console.log(data);
+        });
+      });
+
+      $("#dim").click(function(){
+        $.get("cgi-bin/screendim.cgi",function(data){
+          console.log(data);
+        });
+      });
     });
 
     function loadSound (src) {
@@ -115,6 +133,10 @@
   <div class="jumbotron" id="PAUSE">
     <h1>Pause</h1>
   </div>
+
+	<button type="button" class="btn btn-secondary btn-lg btn-block" id="dim">DIM</button>
+	<button type="button" class="btn btn-primary btn-lg btn-block" id="screenon">Keep Screen On</button>
+	<button type="button" class="btn btn-secondary btn-lg btn-block" id="allowoff">Allow Screen to Turn Off</button>
 </div>
 
 </body>
